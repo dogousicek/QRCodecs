@@ -1,0 +1,231 @@
+﻿/*¨bad apple vid https://www.youtube.com/watch?v=9lNZ_Rnr7Jc
+ * 
+ * 
+ * 
+ * 
+ */
+
+using Raylib_cs;
+using System.Diagnostics;
+using System.Text;
+using static Raylib_cs.Raylib;
+
+namespace QRCodecs;
+
+class Program
+{
+    public const int MaxInputChars = 53;
+    
+
+    // STAThread is required if you deploy using NativeAOT on Windows - See https://github.com/raylib-cs/raylib-cs/issues/301
+    [STAThread]
+    public static int Main()
+    {
+        const int screenWidth = 800;
+        const int screenHeight = 600;
+
+        InitWindow(screenWidth, screenHeight, "QR code gen in cs");
+
+        char[] name = new char[MaxInputChars];
+        int letterCount = 0;
+
+        Rectangle textBox = new(100, 50, 600, 35);
+        bool mouseOnText = false;
+
+        int framesCounter = 0;
+
+        Rectangle button = new(400, 100, 200, 50);
+        bool mouseOnButton = false;
+
+        SetTargetFPS(20);
+
+        while (!WindowShouldClose())
+        {
+
+            if (CheckCollisionPointRec(GetMousePosition(), textBox))
+            {
+                mouseOnText = true;
+            }
+            else
+            {
+                mouseOnText = false;
+            }
+
+            if (CheckCollisionPointRec(GetMousePosition(), button))
+            {
+                mouseOnButton = true;
+            }
+            else
+            {
+                 mouseOnButton = false;
+            }
+
+            if (mouseOnButton && IsMouseButtonPressed(MouseButton.Left))
+            {
+                GenerateQRCode(name);
+            }
+
+            if (mouseOnText)
+            {
+                SetMouseCursor(MouseCursor.IBeam);
+
+                int key = GetCharPressed();
+
+                while (key > 0)
+                {
+                    // NOTE: Only allow keys in range [32..125]
+                    if ((key >= 32) && (key <= 125) && (letterCount < MaxInputChars))
+                    {
+                        name[letterCount] = (char)key;
+                        letterCount++;
+                    }
+
+                    // Check next character in the queue
+                    key = GetCharPressed();
+                }
+
+                if (IsKeyPressed(KeyboardKey.Backspace))
+                {
+                    letterCount -= 1;
+                    if (letterCount < 0)
+                    {
+                        letterCount = 0;
+                    }
+                    name[letterCount] = '\0';
+                }
+            }
+            else
+            {
+                SetMouseCursor(MouseCursor.Default);
+            }
+
+            if (mouseOnText)
+            {
+                framesCounter += 1;
+            }
+            else
+            {
+                framesCounter = 0;
+            }
+
+
+            // Draw
+            //----------------------------------------------------------------------------------
+            BeginDrawing();
+            ClearBackground(Color.RayWhite);
+
+            DrawText("Type in the url or whatever", 150, 10, 30, Color.Red);
+            DrawRectangleRec(textBox, Color.LightGray);
+            DrawRectangleRec(button, Color.LightGray);
+            DrawText("GENERATE", (int)button.X + 15, (int)button.Y + 15, 30, Color.Maroon);
+
+            if (mouseOnText)
+            {
+                DrawRectangleLines(
+                    (int)textBox.X,
+                    (int)textBox.Y,
+                    (int)textBox.Width,
+                    (int)textBox.Height,
+                    Color.Red
+                );
+            }
+            else
+            {
+                DrawRectangleLines(
+                    (int)textBox.X,
+                    (int)textBox.Y,
+                    (int)textBox.Width,
+                    (int)textBox.Height,
+                    Color.DarkGray
+                );
+            }
+
+            DrawText(new string(name), (int)textBox.X + 5, (int)textBox.Y + 8, 20, Color.Maroon);
+            DrawText($"INPUT CHARS: {letterCount}/{MaxInputChars}", 150, 110, 15, Color.Maroon);
+
+            if (mouseOnText)
+            {
+                if (letterCount < MaxInputChars)
+                {
+                    // Draw blinking underscore char
+                    if ((framesCounter / 20 % 2) == 0)
+                    {
+                        DrawText(
+                            "_",
+                            (int)textBox.X + 8 + MeasureText(new string(name), 20),
+                            (int)textBox.Y + 12,
+                            20,
+                            Color.Maroon
+                        );
+                    }
+                }
+                else
+                {
+                    DrawText("Press BACKSPACE to delete chars...", 230, 300, 20, Color.Gray);
+                }
+            }
+
+            EndDrawing();
+
+        }
+
+        CloseWindow(); // Close window and OpenGL context
+
+        Console.WriteLine(prevodDoBin(8));
+
+        return 0;
+    }
+
+    public static void GenerateQRCode(char[] CharArray)
+    {
+        int QRSize = 29;
+
+        //GETTING THE QR BITS FROM THE INPUT
+        string bitinfo = "";
+
+        for (int i = 0; i < CharArray.Length; i++)
+        {
+            if (CharArray[i] == '\0')
+            {
+                break;
+            }
+            bitinfo += prevodDoBin((short)CharArray[i]);
+        }
+
+        Console.WriteLine(bitinfo);
+
+    }
+
+    public static string prevodDoBin(int num)
+    {
+        string cislo = "";
+
+
+        while (num > 0)
+        {
+            if (num % 2 == 0)
+            {
+                cislo += "0";
+            }
+            else
+            {
+                cislo += "1";
+            }
+            num /= 2;
+        }
+
+        string reversedCislo = "";
+
+        for (int i = 0; i < cislo.Length; i++)
+        {
+            reversedCislo = cislo.ElementAt(i) + reversedCislo;
+        }
+
+        while (reversedCislo.Length < 8)
+        {
+            reversedCislo = "0" + reversedCislo;
+        }
+
+        return reversedCislo;
+    }
+}

@@ -236,9 +236,10 @@ class Program
 
             // Draw the QR code
             DrawFinder(Margin, Margin, pixelSize);
-            DrawFinder(Margin + (QRSize - 5) * pixelSize, Margin, pixelSize);
-            DrawFinder(Margin, Margin + (QRSize - 5) * pixelSize, pixelSize);
-            DrawAlignment(Margin + 10 * pixelSize + 4 * pixelSize * QRVer, Margin + 10 * pixelSize + 4 * pixelSize * QRVer, pixelSize); // [(10 + 4·v), (10 + 4·v)] 
+            DrawFinder(Margin + (QRSize - 7) * pixelSize, Margin, pixelSize);
+            DrawFinder(Margin, Margin + (QRSize - 7) * pixelSize, pixelSize);
+            DrawAlignment(Margin + 10 * pixelSize + 4 * pixelSize * QRVer, Margin + 10 * pixelSize + 4 * pixelSize * QRVer, pixelSize); // [(10 + 4·v), (10 + 4·v)]
+            DrawTiming(Margin + 6 * pixelSize, Margin + 6 * pixelSize, pixelSize);
 
             EndDrawing();
         }
@@ -249,6 +250,12 @@ class Program
 
     }
 
+    /// <summary>
+    /// draws finder pattern in the QR code
+    /// </summary>
+    /// <param name="posx">x pos of the upper left corner</param>
+    /// <param name="posy">y pos of the upper left corner</param>
+    /// <param name="pixelSize">size of the pixel that it should be drawn with</param>
     public static void DrawFinder(int posx, int posy, int pixelSize)
     {
         DrawRectangle(posx, posy, pixelSize * 7, pixelSize * 7, Color.Black);
@@ -257,16 +264,46 @@ class Program
 
     }
 
+    /// <summary>
+    /// draws the alignment pattern in the QR code
+    /// </summary>
+    /// <param name="posx">x pos of the middle</param>
+    /// <param name="posy">y pos of the middle</param>
+    /// <param name="pixelSize">size of the pixel that it should be drawn with</param>
     public static void DrawAlignment(int posx, int posy, int pixelSize)
     {
-        DrawRectangle(posx, posy, pixelSize * 5, pixelSize * 5, Color.Black);
-        DrawRectangle(posx + pixelSize, posy + pixelSize, pixelSize * 3, pixelSize * 3, Color.White);
-        DrawRectangle(posx + pixelSize * 2, posy + pixelSize * 2, pixelSize, pixelSize, Color.Black);
+        DrawRectangle(posx - 2 * pixelSize, posy - 2 * pixelSize , pixelSize * 5, pixelSize * 5, Color.Black);
+
+        DrawRectangle(posx - pixelSize, posy - pixelSize, pixelSize * 3, pixelSize * 3, Color.White);
+
+        DrawRectangle(posx, posy, pixelSize, pixelSize, Color.Black);
     }
 
     public static void DrawTiming(int posx, int posy, int pixelSize)
     {
-        
+        for (int i = 0; i <= 14; i++)
+        {
+            if (i % 2 == 0)
+            {
+                DrawRectangle(posx + i * pixelSize, posy, pixelSize, pixelSize, Color.Black);
+            }
+            else
+            {
+                DrawRectangle(posx + i * pixelSize, posy, pixelSize, pixelSize, Color.White);
+            }
+        }
+
+        for (int i = 0; i <= 14; i++)
+        {
+            if (i % 2 == 0)
+            {
+                DrawRectangle(posx, posy + i * pixelSize, pixelSize, pixelSize, Color.Black);
+            }
+            else
+            {
+                DrawRectangle(posx, posy + i * pixelSize, pixelSize, pixelSize, Color.White);
+            }
+        }
     }
 
     public static string ReedSolomon(string data, int ecc)

@@ -1,7 +1,7 @@
 ﻿/*¨bad apple vid https://www.youtube.com/watch?v=9lNZ_Rnr7Jc
  * 
  * 
- * 
+ * dev note: ITS CREEPY AF HOW THE AI KNOWS WHAT I AM THINKING <- it completed this sentence
  * 
  */
 
@@ -191,9 +191,45 @@ class Program
             }
             bitinfo += prevodDoBin((short)CharArray[i]);
         }
+        //------------------
+
+        //MAKE A SEPERATE WINDOW FOR THE QR CODE
+        const int qrWindowWidth = 500;
+        const int qrWindowHeight = 500;
+        const int pixelSize = 10;
+
+        InitWindow(qrWindowWidth, qrWindowHeight, "QR Code");
+        SetTargetFPS(10);
+
+        while (!WindowShouldClose())
+        {
+            BeginDrawing();
+            ClearBackground(Color.RayWhite);
+
+            // Draw the QR code
+            
+
+
+            EndDrawing();
+        }
+
+        CloseWindow(); // Close window and OpenGL context
 
         Console.WriteLine(bitinfo);
 
+    }
+
+    public static void DrawFinder(int posx, int posy, int pixelSize)
+    {
+
+    }
+
+    public static string ReedSolomon(string data, int ecc)
+    {
+        // Placeholder for Reed-Solomon encoding logic
+        // This function should implement the actual Reed-Solomon encoding algorithm
+        // For now, it just returns the input data as a string
+        return data;
     }
 
     public static string prevodDoBin(int num)

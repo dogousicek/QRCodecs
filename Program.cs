@@ -140,6 +140,27 @@ class Program
                 );
             }
 
+            if (mouseOnButton)
+            {
+                DrawRectangleLines(
+                    (int)button.X,
+                    (int)button.Y,
+                    (int)button.Width,
+                    (int)button.Height,
+                    Color.Red
+                );
+            }
+            else
+            {
+                DrawRectangleLines(
+                    (int)button.X,
+                    (int)button.Y,
+                    (int)button.Width,
+                    (int)button.Height,
+                    Color.DarkGray
+                );
+            }
+
             DrawText(new string(name), (int)textBox.X + 5, (int)textBox.Y + 8, 20, Color.Maroon);
             DrawText($"INPUT CHARS: {letterCount}/{MaxInputChars}", 150, 110, 15, Color.Maroon);
 
@@ -170,18 +191,21 @@ class Program
         }
 
         CloseWindow(); // Close window and OpenGL context
-
-        Console.WriteLine(prevodDoBin(8));
+        
 
         return 0;
     }
 
+    //its really freaky how the ai knows shit i want to write, ig i just gotta me the code so bad ai cant do anytihng
+
+
     public static void GenerateQRCode(char[] CharArray)
     {
         int QRSize = 29;
+        byte QRVer = 3;
 
         //GETTING THE QR BITS FROM THE INPUT
-        string bitinfo = "";
+        string bitinfo = "0100";    //for bit mode 
 
         for (int i = 0; i < CharArray.Length; i++)
         {
@@ -191,24 +215,30 @@ class Program
             }
             bitinfo += prevodDoBin((short)CharArray[i]);
         }
+        bitinfo += "0000"; //terminator
         //------------------
+
+        
 
         //MAKE A SEPERATE WINDOW FOR THE QR CODE
         const int qrWindowWidth = 500;
         const int qrWindowHeight = 500;
-        const int pixelSize = 10;
+        const short pixelSize = 12;
+        const short Margin = 50;
 
         InitWindow(qrWindowWidth, qrWindowHeight, "QR Code");
-        SetTargetFPS(10);
+        SetTargetFPS(20);
 
         while (!WindowShouldClose())
         {
             BeginDrawing();
-            ClearBackground(Color.RayWhite);
+            ClearBackground(Color.White);
 
             // Draw the QR code
-            
-
+            DrawFinder(Margin, Margin, pixelSize);
+            DrawFinder(Margin + (QRSize - 5) * pixelSize, Margin, pixelSize);
+            DrawFinder(Margin, Margin + (QRSize - 5) * pixelSize, pixelSize);
+            DrawAlignment(Margin + 10 * pixelSize + 4 * pixelSize * QRVer, Margin + 10 * pixelSize + 4 * pixelSize * QRVer, pixelSize); // [(10 + 4·v), (10 + 4·v)] 
 
             EndDrawing();
         }
@@ -221,7 +251,22 @@ class Program
 
     public static void DrawFinder(int posx, int posy, int pixelSize)
     {
+        DrawRectangle(posx, posy, pixelSize * 7, pixelSize * 7, Color.Black);
+        DrawRectangle(posx + pixelSize, posy + pixelSize, pixelSize * 5, pixelSize * 5, Color.White);
+        DrawRectangle(posx + pixelSize * 2, posy + pixelSize * 2, pixelSize * 3, pixelSize * 3, Color.Black);
 
+    }
+
+    public static void DrawAlignment(int posx, int posy, int pixelSize)
+    {
+        DrawRectangle(posx, posy, pixelSize * 5, pixelSize * 5, Color.Black);
+        DrawRectangle(posx + pixelSize, posy + pixelSize, pixelSize * 3, pixelSize * 3, Color.White);
+        DrawRectangle(posx + pixelSize * 2, posy + pixelSize * 2, pixelSize, pixelSize, Color.Black);
+    }
+
+    public static void DrawTiming(int posx, int posy, int pixelSize)
+    {
+        
     }
 
     public static string ReedSolomon(string data, int ecc)

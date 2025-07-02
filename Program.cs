@@ -222,7 +222,7 @@ class Program
 
         //MAKE A SEPERATE WINDOW FOR THE QR CODE
         const int qrWindowWidth = 500;
-        const int qrWindowHeight = 500;
+        const int qrWindowHeight = 600;
         const short pixelSize = 12;
         const short Margin = 50;
 
@@ -234,12 +234,16 @@ class Program
             BeginDrawing();
             ClearBackground(Color.White);
 
+            DrawText(new string(CharArray), 10, 500, 17, Color.Black);  //draws the input text
+
             // Draw the QR code
             DrawFinder(Margin, Margin, pixelSize);
             DrawFinder(Margin + (QRSize - 7) * pixelSize, Margin, pixelSize);
             DrawFinder(Margin, Margin + (QRSize - 7) * pixelSize, pixelSize);
             DrawAlignment(Margin + 10 * pixelSize + 4 * pixelSize * QRVer, Margin + 10 * pixelSize + 4 * pixelSize * QRVer, pixelSize); // [(10 + 4·v), (10 + 4·v)]
             DrawTiming(Margin + 6 * pixelSize, Margin + 6 * pixelSize, pixelSize);
+
+            DrawOtherStuff(Margin, Margin, pixelSize, QRSize);
 
             EndDrawing();
         }
@@ -306,12 +310,31 @@ class Program
         }
     }
 
+    public static void DrawOtherStuff(int posx, int posy, int pixelSize, int QrSize)
+    {
+        //drawing THE black pixel
+        DrawRectangle(posx + 8 * pixelSize, posy + (QrSize - 8) * pixelSize, pixelSize, pixelSize, Color.Black);
+    }
+
     public static string ReedSolomon(string data, int ecc)
     {
         // Placeholder for Reed-Solomon encoding logic
         // This function should implement the actual Reed-Solomon encoding algorithm
         // For now, it just returns the input data as a string
+        //will probably use mod 126 or higher
         return data;
+    }
+
+    public static string Masking(string str)
+    {
+        return str; // Placeholder for masking logic
+    }
+
+    public static void PLOTPOINTS(int posX, int posY, int pixelSize, string data)
+    {
+        // Placeholder for plotting points logic
+        // This function should take the data and plot it on the QR code grid
+        // For now, it does nothing
     }
 
     public static string prevodDoBin(int num)
@@ -346,4 +369,5 @@ class Program
 
         return reversedCislo;
     }
+
 }

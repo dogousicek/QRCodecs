@@ -364,7 +364,9 @@ class Program
 
         //muzeme nasobit cisla pomoci b^(logb(p) + logb(q)) kde b je ciselna soustava, p a q jsou nasobena cisla
 
-        //priste zacni u errror-correction-coding setp 7
+        short codewordCount = 55;
+
+
 
         return codewords;
     }

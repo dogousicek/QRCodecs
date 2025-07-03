@@ -62,7 +62,8 @@ class Program
 
             if (mouseOnButton && IsMouseButtonPressed(MouseButton.Left))
             {
-                GenerateQRCode(name);
+                CloseWindow(); // Close the main window
+                GenerateQRCode(new string(name));
             }
 
             if (mouseOnText)
@@ -199,26 +200,36 @@ class Program
     //its really freaky how the ai knows shit i want to write, ig i just gotta me the code so bad ai cant do anytihng
 
 
-    public static void GenerateQRCode(char[] CharArray)
+    public static void GenerateQRCode(string array)
     {
         int QRSize = 29;
         byte QRVer = 3;
 
+
+
         //GETTING THE QR BITS FROM THE INPUT
         string bitinfo = "0100";    //for bit mode 
+        string bitdata = "";        //new string for storing data before assigning the lenght
+        int lenght = 0;
 
-        for (int i = 0; i < CharArray.Length; i++)
+        for (int i = 0; i < array.Length; i++)
         {
-            if (CharArray[i] == '\0')
+            if (array[i] == '\0')
             {
                 break;
             }
-            bitinfo += prevodDoBin((short)CharArray[i]);
+            bitdata += prevodDoBin((short)array[i]);
+            lenght++;
         }
+        bitinfo += prevodDoBin(lenght);
+        Console.WriteLine(lenght);
+        bitinfo += bitdata;
         bitinfo += "0000"; //terminator
+
+        Console.WriteLine(bitinfo);
         //------------------
 
-        
+
 
         //MAKE A SEPERATE WINDOW FOR THE QR CODE
         const int qrWindowWidth = 500;
@@ -234,7 +245,7 @@ class Program
             BeginDrawing();
             ClearBackground(Color.White);
 
-            DrawText(new string(CharArray), 10, 500, 17, Color.Black);  //draws the input text
+            DrawText(array, 10, 500, 17, Color.Black);  //draws the input text
 
             // Draw the QR code
             DrawFinder(Margin, Margin, pixelSize);
@@ -250,7 +261,7 @@ class Program
 
         CloseWindow(); // Close window and OpenGL context
 
-        Console.WriteLine(bitinfo);
+        
 
     }
 

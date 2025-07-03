@@ -222,11 +222,34 @@ class Program
             lenght++;
         }
         bitinfo += prevodDoBin(lenght);
-        Console.WriteLine(lenght);
-        bitinfo += bitdata;
-        bitinfo += "0000"; //terminator
+        bitinfo += bitdata;     
 
+        bitinfo += "0000 "; //terminator
+
+        
+        if(bitinfo.Length / 8 < 53)
+        {
+            short remaining = (short)(53 - bitinfo.Length / 8);
+
+            Console.WriteLine($"remaining bits: {remaining}");
+
+            while(remaining > 0)
+            {
+                if(remaining >= 2)
+                {
+                    bitinfo += "1110110000010001";
+                    remaining -= 2;
+                } else
+                {
+                    bitinfo += "11101100";
+                    remaining -= 1;
+                }
+            }
+        }
+
+        Console.WriteLine();
         Console.WriteLine(bitinfo);
+        Console.WriteLine();
         //------------------
 
 
@@ -329,11 +352,21 @@ class Program
 
     public static string ReedSolomon(string data, int ecc)
     {
-        // Placeholder for Reed-Solomon encoding logic
-        // This function should implement the actual Reed-Solomon encoding algorithm
-        // For now, it just returns the input data as a string
-        //will probably use mod 126 or higher
-        return data;
+        string codewords = "";  //there will be 55 codewords split into blocks of 15
+
+        //pracujeme v modulo 256
+        //zaporna cisla maji stejnou hodnotu jako kladna takze muzeme pouzit abs hodonotu
+        //delame XOR operace
+        //scititani a odcitani v GF(256) se dela pomoci XOR operaci
+        //pouzivame stejne bitwise operatory jako v C tzn. |, ^, &
+        //podle qr specificake pouzivame byte-wise modulo 100011101 neboli 285 v desitkove soustave
+        //to znaena ze pokud je cislo >= 256 melo by byt XORnuto s 285
+
+        //muzeme nasobit cisla pomoci b^(logb(p) + logb(q)) kde b je ciselna soustava, p a q jsou nasobena cisla
+
+        //priste zacni u errror-correction-coding setp 7
+
+        return codewords;
     }
 
     public static string Masking(string str)
@@ -379,6 +412,23 @@ class Program
         }
 
         return reversedCislo;
+    }
+
+    public static int modulo(double num)
+    {
+        if(num > 255)
+        {
+            return (int)num ^ 285; // XOR with 285 for QR code specific masking
+        } else
+        {
+            return (int)num; // No XOR needed for numbers less than 256
+        }
+            
+    }
+
+    public static int multiplyingInGF(int a, int b)
+    {
+        return (int) Math.Pow(2, (modulo(Math.Log2(a) + Math.Log2(b))));
     }
 
 }
